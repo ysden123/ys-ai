@@ -3,31 +3,26 @@ package com.stulsoft.ai.model
 import org.apache.hc.core5.http.HttpEntity
 import org.apache.hc.core5.http.io.entity.EntityUtils
 import org.json4s.*
+import org.json4s.FieldSerializer.*
 import org.json4s.jackson.JsonMethods.*
 case class Model(id: String,
+                 theObject: String,
                  created: Long,
                  owned_by: String,
                  permission: List[Permission],
                  root: String,
-                 parent: Option[String]) {
-  private var object_value: String = _
-
-  def objectValue(): String = this.object_value
-
-  def withObjectValue(theObject: String): Model =
-    this.object_value = theObject
-    this
-}
-
+                 parent: Option[String])
 object Model:
-  given formats: DefaultFormats = DefaultFormats
+  private val rename4Model = FieldSerializer[Model](renameTo("theObject", "object"),
+    renameFrom("object", "theObject"))
+
+  private val rename4Permission = FieldSerializer[Permission](renameTo("theObject", "object"),
+    renameFrom("object", "theObject"))
+
+  given formats: Formats = DefaultFormats + rename4Model + rename4Permission
 
   def fromJValue(jValue: JValue): Model =
     val model = Extraction.extract[Model](jValue)
-    jValue \ "object" match {
-      case JString(s) => model.withObjectValue(s)
-      case _ =>
-    }
     model
 
   def entityToModels(entity:HttpEntity):List[Model] =

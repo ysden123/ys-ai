@@ -1,8 +1,10 @@
 package com.stulsoft.ai.model
 
-import org.json4s._
+import org.json4s.*
+import org.json4s.FieldSerializer.*
 
 case class Permission(id: String,
+                      theObject: String,
                       created: Long,
                       allow_create_engine: Boolean,
                       allow_sampling: Boolean,
@@ -13,22 +15,14 @@ case class Permission(id: String,
                       organization: String,
                       group: Option[String],
                       is_blocking: Boolean
-                     ) {
-  private var object_value: String = _
-
-  def objectValue(): String = this.object_value
-
-  def withObjectValue(theObject: String): Permission =
-    this.object_value = theObject
-    this
-}
+                     )
 
 object Permission:
-  given formats: DefaultFormats = DefaultFormats
+  private val rename = FieldSerializer[Permission](renameTo("theObject", "object"),
+    renameFrom("object", "theObject"))
+
+  given formats: Formats = DefaultFormats + rename
+
   def fromJValue(jValue: JValue): Permission =
     val permission = Extraction.extract[Permission](jValue)
-    jValue \ "object" match {
-      case JString(s) => permission.withObjectValue(s)
-      case _ =>
-    }
     permission

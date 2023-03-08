@@ -2,6 +2,7 @@ package com.stulsoft.ai.model
 
 import org.json4s.*
 import org.json4s.jackson.JsonMethods.*
+import org.json4s.FieldSerializer.*
 import org.scalatest.funsuite.AnyFunSuite
 
 import scala.io.Source
@@ -46,8 +47,6 @@ class ModelTest extends AnyFunSuite:
   }
 
   test("multiple model parsing") {
-    given formats: DefaultFormats = DefaultFormats
-
     val buffer = Source.fromResource("models.json").getLines().mkString("\n")
     val response = parse(buffer)
     response \ "data" match {

@@ -29,5 +29,5 @@ class PermissionTest extends AnyFunSuite:
     val jValue = parse(permissionText)
     val permission = Permission.fromJValue(jValue)
     assert(permission != null)
-    assertResult("model_permission")(permission.objectValue())
+    assertResult("model_permission")(permission.theObject)
   }
